@@ -12,6 +12,9 @@ up:
 rebuild:
 	docker compose up -d --no-deps --build app
 
+setup-hooks:
+	docker exec -it payment_service_app git config core.hooksPath .githooks
+
 exec:
 	docker exec -it payment_service_app bash
 

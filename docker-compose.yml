@@ -22,8 +22,37 @@ services:
             - '.:/var/www/html'
         networks:
             - sbc
+        depends_on:
+            - payment_mysql
+            - payment_localstack
 
-    localstack:
+    payment_mysql:
+        image: 'mysql/mysql-server:8.0'
+        ports:
+            - '${FORWARD_DB_PORT:-3306}:3306'
+        container_name: payment_db
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        volumes:
+            - 'sbc-payment-db-mysql:/var/lib/mysql'
+            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+        networks:
+            - sbc
+        healthcheck:
+            test:
+                - CMD
+                - mysqladmin
+                - ping
+                - '-p${DB_PASSWORD}'
+            retries: 3
+            timeout: 5s
+
+    payment_localstack:
         image: localstack/localstack:latest
         container_name: localstack
         platform: linux/x86_64
@@ -43,3 +72,6 @@ services:
 networks:
     sbc:
         driver: bridge
+volumes:
+    sbc-payment-db-mysql:
+        driver: local

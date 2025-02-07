@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "🔍 Running Laravel Pint (code style checker)..."
+
+# Run Laravel Pint to check code style
+./vendor/bin/pint --test
+PINT_STATUS=$?
+
+if [ $PINT_STATUS -ne 0 ]; then
+    echo "❌ Code style issues found! Fix them before committing."
+    exit 1  # Prevent commit
+fi
+
+echo "✅ Code style check passed!"
+
+
+echo "🔍 Running PHPStan (static analysis)..."
+
+# Run PHPStan (ensure it's installed)
+./vendor/bin/phpstan analyse --configuration=phpstan.neon
+PHPSTAN_STATUS=$?
+
+if [ $PHPSTAN_STATUS -ne 0 ]; then
+    echo "❌ PHPStan found issues! Fix them before committing."
+    exit 1  # Prevent commit
+fi
+
+echo "✅ PHPStan analysis passed!"
+
+exit 0  # Allow commit
