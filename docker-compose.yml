@@ -1,0 +1,45 @@
+services:
+    payment_service:
+        build:
+            context: './vendor/laravel/sail/runtimes/8.4'
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: 'sail-8.4/app'
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${APP_PORT:-8702}:80'
+            - '${VITE_PORT:-5174}:${VITE_PORT:-5173}'
+        container_name: payment_service_app
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sbc
+
+    localstack:
+        image: localstack/localstack:latest
+        container_name: localstack
+        platform: linux/x86_64
+        ports:
+            - "4566:4566" # Gateway
+            - "8011:8000" # DynamoDB
+        environment:
+            SERVICES: "dynamodb"
+            DEBUG: 1
+
+        volumes:
+            - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        networks:
+            - sbc
+
+networks:
+    sbc:
+        driver: bridge
