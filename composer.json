@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.336",
+        "baopham/dynamodb": "^6.5",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9"
     },
