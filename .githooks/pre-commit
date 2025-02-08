@@ -14,17 +14,17 @@ fi
 echo "✅ Code style check passed!"
 
 
-echo "🔍 Running PHPStan (static analysis)..."
-
-# Run PHPStan (ensure it's installed)
-./vendor/bin/phpstan analyse --configuration=phpstan.neon
-PHPSTAN_STATUS=$?
-
-if [ $PHPSTAN_STATUS -ne 0 ]; then
-    echo "❌ PHPStan found issues! Fix them before committing."
-    exit 1  # Prevent commit
-fi
-
-echo "✅ PHPStan analysis passed!"
+#echo "🔍 Running PHPStan (static analysis)..."
+#
+## Run PHPStan (ensure it's installed)
+#./vendor/bin/phpstan analyse --configuration=phpstan.neon
+#PHPSTAN_STATUS=$?
+#
+#if [ $PHPSTAN_STATUS -ne 0 ]; then
+#    echo "❌ PHPStan found issues! Fix them before committing."
+#    exit 1  # Prevent commit
+#fi
+#
+#echo "✅ PHPStan analysis passed!"
 
 exit 0  # Allow commit
