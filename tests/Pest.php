@@ -11,9 +11,11 @@
 |
 */
 
-pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+use Tests\Integration\BaseWebTestCase;
+
+pest()->extend(BaseWebTestCase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->in('Integration');
 
 /*
 |--------------------------------------------------------------------------

@@ -23,3 +23,6 @@ db-seed:
 
 stop:
 	./vendor/bin/sail down
+
+run-tests:
+	docker exec payment_service_app php artisan test --colors=always --env=testing

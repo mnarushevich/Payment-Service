@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/healthcheck', function () {
     return response()->json(['status' => 'ok']);
-})->name('home');
+})->name('healthcheck');
 
 Route::post('/subscription', CreateSubscriptionController::class)->name('subscription.create');
 Route::post('/subscription/cancel', CancelSubscriptionController::class)->name('subscription.cancel');
