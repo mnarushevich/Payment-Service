@@ -28,11 +28,6 @@ class ApiExceptionHandler
             default => Response::HTTP_INTERNAL_SERVER_ERROR,
         };
 
-        $message = match ($status) {
-            Response::HTTP_NOT_FOUND => 'Not found.',
-            default => $exception->getMessage()
-        };
-
-        return response()->json(['status' => $status, 'message' => $message], $status);
+        return response()->json(['status' => $status, 'message' => $exception->getMessage()], $status);
     }
 }
