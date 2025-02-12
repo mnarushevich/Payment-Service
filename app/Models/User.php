@@ -18,6 +18,6 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'external_user_id',
+        'internal_user_id',
     ];
 }

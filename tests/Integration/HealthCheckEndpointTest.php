@@ -14,4 +14,4 @@ describe('GET /healthcheck', function () {
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(['status' => 'ok']);
     });
-});
+})->group('no-auth');

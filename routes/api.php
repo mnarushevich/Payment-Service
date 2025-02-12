@@ -20,6 +20,8 @@ Route::get('/healthcheck', function () {
 
 Route::middleware(['auth.token'])->group(function () {
     Route::get('/payment-method/list', GetPaymentMethodController::class)->name('payment-method.list');
+
+    Route::post('/customer', CreateCustomerController::class)->name('customer.create');
 });
 
 Route::post('/subscription', CreateSubscriptionController::class)->name('subscription.create');
@@ -29,8 +31,6 @@ Route::post('/subscription/end-trial', EndSubscriptionTrialController::class)->n
 
 Route::post('/charge', SingleChargeController::class)->name('charge');
 Route::get('/charge/refund/{paymentId}', RefundChargeController::class)->name('charge.refund');
-
-Route::post('/customer', CreateCustomerController::class)->name('customer.create');
 
 Route::get('/payment/checkout', CheckoutController::class)->name('payment.checkout');
 

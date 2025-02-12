@@ -8,13 +8,15 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class GetPaymentMethodController extends Controller
 {
     public function __invoke(Request $request)
     {
         $internalUserId = $request->input('auth_user_id');
-        $user = User::query()->where('external_user_id', $internalUserId)->first();
+        $user = User::query()->where('internal_user_id', $internalUserId)->first();
 
         if (! $user) {
             throw new ModelNotFoundException("User with ID $internalUserId not found.");
@@ -23,9 +25,9 @@ class GetPaymentMethodController extends Controller
         try {
             return $user->paymentMethods();
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            Log::error($e->getMessage());
 
-            return response()->json(['message' => 'Failed to get payment methods.'], 400);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -7,18 +7,15 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class CreateCustomerController extends Controller
 {
     public function __invoke(Request $request)
     {
-
-        $request->validate([
-            'external_user_id' => ['required'],
-        ]);
         $user = new User;
-
-        $user->external_user_id = $request->input('external_user_id');
+        $user->internal_user_id = $request->input('auth_user_id');
         $user->save();
 
         try {
@@ -27,7 +24,7 @@ class CreateCustomerController extends Controller
                 'name' => 'Maksim Narushevich',
                 'phone' => '+66812345678',
                 'metadata' => [
-                    'external_user_id' => $user->external_user_id,
+                    'internal_user_id' => $user->internal_user_id,
                 ],
                 'address' => [
                     'line1' => '123 Example Street',
@@ -41,9 +38,12 @@ class CreateCustomerController extends Controller
 
             return response()->json(['message' => $stripeCustomer]);
         } catch (\Exception $e) {
-            dd($e);
+            Log::error($e->getMessage());
 
-            return response()->json(['message' => 'Failed to create customer.'], 400);
+            return response()->json(
+                ['message' => 'Failed to create customer.'],
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 }

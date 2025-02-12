@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->uuid('external_user_id')->unique();
+            $table->uuid('internal_user_id')->unique();
             $table->timestamps();
         });
     }

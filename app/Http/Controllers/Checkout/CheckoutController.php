@@ -15,10 +15,10 @@ class CheckoutController extends Controller
         $request->validate(['product_id' => ['required']]);
 
         $amount = 100;
-        //$externalUserId = $request->input('external_user_id'); //TODO
+        //$externalUserId = $request->input('internal_user_id'); //TODO
         $productId = $request->input('product_id');
 
-        $user = User::query()->where('external_user_id', '9e107d9d-372b-4a6c-8a5b-36d2f3a7b432')->first();
+        $user = User::query()->where('internal_user_id', '9e107d9d-372b-4a6c-8a5b-36d2f3a7b432')->first();
 
         try {
             return $user->checkoutCharge($amount, $productId, 1, [

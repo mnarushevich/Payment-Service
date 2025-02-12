@@ -20,9 +20,9 @@ class CancelSubscriptionController extends Controller
             ]
         );
         $cancelAfterNumberDays = $request->input('cancel_after_num_days');
-        //$externalUserId = $request->input('external_user_id');
+        //$externalUserId = $request->input('internal_user_id');
         $externalUserId = '9e107d9d-372b-4a6c-8a5b-36d2f3a7b432'; //TODO
-        $user = User::query()->where('external_user_id', $externalUserId)->first();
+        $user = User::query()->where('internal_user_id', $externalUserId)->first();
 
         try {
             if ($request->input('is_cancel_now')) {
