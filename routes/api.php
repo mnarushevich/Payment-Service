@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\Customer\CreateCustomerController;
 use App\Http\Controllers\HandleWebhookController;
+use App\Http\Controllers\PaymentMethod\AddPaymentMethodController;
 use App\Http\Controllers\Paymentmethod\GetPaymentMethodController;
 use App\Http\Controllers\RefundChargeController;
 use App\Http\Controllers\SingleChargeController;
@@ -20,6 +21,7 @@ Route::get('/healthcheck', function () {
 
 Route::middleware(['auth.token'])->group(function () {
     Route::get('/payment-method/list', GetPaymentMethodController::class)->name('payment-method.list');
+    Route::post('/payment-method/add', AddPaymentMethodController::class)->name('payment-method.add');
 
     Route::post('/customer', CreateCustomerController::class)->name('customer.create');
 });

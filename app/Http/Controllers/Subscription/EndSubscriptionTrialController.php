@@ -5,22 +5,15 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Subscription;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class EndSubscriptionTrialController extends Controller
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, UserService $userService)
     {
-        $request->validate(
-            [
-                'type' => ['string'],
-            ]
-        );
-        //$externalUserId = $request->input('internal_user_id');
-        $externalUserId = '9e107d9d-372b-4a6c-8a5b-36d2f3a7b432'; //TODO
-        $user = User::query()->where('internal_user_id', $externalUserId)->first();
-
+        $request->validate(['type' => ['string']]);
+        $user = $userService->getByInternalUserId($request->input('auth_user_id'));
         $subscription = $user->subscription($request->input('type'));
 
         if (! $subscription) {

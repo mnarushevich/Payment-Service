@@ -5,22 +5,21 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Subscription;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CreateSubscriptionController extends Controller
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, UserService $userService)
     {
         $request->validate([
             'payment_method_id' => ['string'],
             'type' => ['string'],
             'trial_num_days' => ['int', 'min:1'],
         ]);
-        //$externalUserId = $request->input('internal_user_id');
-        $externalUserId = '9e107d9d-372b-4a6c-8a5b-36d2f3a7b432'; //TODO
-        $user = User::query()->where('internal_user_id', $externalUserId)->first();
+        $user = $userService->getByInternalUserId($request->input('auth_user_id'));
 
         $subscriptionType = $request->input('type', 'default');
         $trialDaysNumber = $request->input('trial_num_days');
@@ -38,7 +37,9 @@ class CreateSubscriptionController extends Controller
             }
 
             return $subscription->create($paymentMethodId, ['metadata' => ['init_time' => Carbon::now()->toDateTimeString()]]);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
             return response()->json(['message' => 'Failed to create subscription.'], 400);
         }
     }
