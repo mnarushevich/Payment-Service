@@ -7,6 +7,8 @@ namespace App\Http\Controllers\Subscription;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class EndSubscriptionTrialController
 {
@@ -17,13 +19,19 @@ class EndSubscriptionTrialController
         $subscription = $user->subscription($request->input('type'));
 
         if (! $subscription) {
-            return response()->json(['message' => 'Subscription not found.'], 404);
+            return response()->json(['message' => 'Subscription not found.'], Response::HTTP_NOT_FOUND);
         }
 
-        if ($subscription->onTrial()) {
-            $subscription->endTrial();
+        try {
+            if ($subscription->onTrial()) {
+                $subscription->endTrial();
 
-            return response()->json(['message' => 'Subscription trial ended.']);
+                return response()->json(['message' => 'Subscription trial ended.']);
+            }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json(['message' => 'Failed to end subscription trial.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return response()->json(['message' => 'Subscription is not on trial.']);

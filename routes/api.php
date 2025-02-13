@@ -28,9 +28,8 @@ Route::middleware(['auth.token'])->group(function () {
     Route::post('/subscription', CreateSubscriptionController::class)->name('subscription.create');
     Route::post('/subscription/cancel', CancelSubscriptionController::class)->name('subscription.cancel');
     Route::post('/subscription/resume', ResumeSubscriptionController::class)->name('subscription.resume');
+    Route::post('/subscription/end-trial', EndSubscriptionTrialController::class)->name('subscription.end-trial');
 });
-
-Route::post('/subscription/end-trial', EndSubscriptionTrialController::class)->name('subscription.end-trial');
 
 Route::post('/charge', SingleChargeController::class)->name('charge');
 Route::get('/charge/refund/{paymentId}', RefundChargeController::class)->name('charge.refund');
