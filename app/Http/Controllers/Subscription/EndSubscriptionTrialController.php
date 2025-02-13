@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Subscription;
 
-use App\Http\Controllers\Controller;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class EndSubscriptionTrialController extends Controller
+class EndSubscriptionTrialController
 {
-    public function __invoke(Request $request, UserService $userService)
+    public function __invoke(Request $request, UserService $userService): JsonResponse
     {
-        $request->validate(['type' => ['string']]);
+        $request->validate(['type' => ['required', 'string']]);
         $user = $userService->getByInternalUserId($request->input('auth_user_id'));
         $subscription = $user->subscription($request->input('type'));
 

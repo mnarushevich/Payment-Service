@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
-class SingleChargeController extends Controller
+class SingleChargeController
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, UserService $userService): JsonResponse
     {
         $request->validate(
             [
-                'amount' => ['int', 'required', 'min:1'],
+                'amount' => ['required',  'int', 'min:1'],
             ]
         );
-        //$externalUserId = $request->input('internal_user_id');
-        $externalUserId = '9e107d9d-372b-4a6c-8a5b-36d2f3a7b432'; //TODO
-        $user = User::query()->where('internal_user_id', $externalUserId)->first();
+        $user = $userService->getByInternalUserId($request->input('auth_user_id'));
         $paymentMethod = $user->defaultPaymentMethod();
 
         if ($paymentMethod === null) {
-            return response()->json(['message' => 'No payment method found.'], 404);
+            return response()->json(['message' => 'No payment method found.'], Response::HTTP_NOT_FOUND);
         }
 
         try {
-            $payment = $user->charge($request->input('amount'), $paymentMethod->id, [
-                'return_url' => route('payment.success'),
-            ]);
+            $payment = $user->charge(
+                $request->input('amount'),
+                $paymentMethod->id,
+                ['return_url' => route('payment.success')],
+            );
 
             return response()->json(
                 [
@@ -38,9 +41,9 @@ class SingleChargeController extends Controller
                 ],
             );
         } catch (\Exception $e) {
-            // Log::error($e->getMessage());
+            Log::error($e->getMessage());
 
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['message' => 'Payment failed.'], Response::HTTP_BAD_REQUEST);
         }
     }
 }

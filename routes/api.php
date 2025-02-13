@@ -24,11 +24,12 @@ Route::middleware(['auth.token'])->group(function () {
     Route::post('/payment-method/add', AddPaymentMethodController::class)->name('payment-method.add');
 
     Route::post('/customer', CreateCustomerController::class)->name('customer.create');
+
+    Route::post('/subscription', CreateSubscriptionController::class)->name('subscription.create');
+    Route::post('/subscription/cancel', CancelSubscriptionController::class)->name('subscription.cancel');
+    Route::post('/subscription/resume', ResumeSubscriptionController::class)->name('subscription.resume');
 });
 
-Route::post('/subscription', CreateSubscriptionController::class)->name('subscription.create');
-Route::post('/subscription/cancel', CancelSubscriptionController::class)->name('subscription.cancel');
-Route::post('/subscription/resume', ResumeSubscriptionController::class)->name('subscription.resume');
 Route::post('/subscription/end-trial', EndSubscriptionTrialController::class)->name('subscription.end-trial');
 
 Route::post('/charge', SingleChargeController::class)->name('charge');

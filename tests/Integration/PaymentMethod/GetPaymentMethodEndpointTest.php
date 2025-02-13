@@ -52,6 +52,6 @@ describe('GET /payment-method/list', function () {
         $token = generateJWTToken($this->user->internal_user_id);
         $this->getJson(getUrl('payment-method.list'), headers: getAuthorizationHeader($token))
             ->assertStatus(Response::HTTP_OK)
-            ->assertJson($mockStripeResponse);
+            ->assertJson(['payment_methods' => $mockStripeResponse]);
     });
 });

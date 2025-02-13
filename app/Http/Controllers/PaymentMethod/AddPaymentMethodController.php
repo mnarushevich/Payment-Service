@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\PaymentMethod;
 
-use App\Http\Controllers\Controller;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Cashier\Cashier;
 use Symfony\Component\HttpFoundation\Response;
 
-class AddPaymentMethodController extends Controller
+class AddPaymentMethodController
 {
-    public function __invoke(Request $request, UserService $userService)
+    public function __invoke(Request $request, UserService $userService): JsonResponse
     {
         $request->validate(
             [
@@ -42,7 +42,7 @@ class AddPaymentMethodController extends Controller
                 'payment_method' => $setupIntent->payment_method,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 }

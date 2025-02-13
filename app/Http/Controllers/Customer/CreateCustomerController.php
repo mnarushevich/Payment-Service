@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreateCustomerController extends Controller
+class CreateCustomerController
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): JsonResponse
     {
         $user = new User;
         $user->internal_user_id = $request->input('auth_user_id');
@@ -42,7 +42,7 @@ class CreateCustomerController extends Controller
 
             return response()->json(
                 ['message' => 'Failed to create customer.'],
-                Response::HTTP_INTERNAL_SERVER_ERROR,
+                Response::HTTP_BAD_REQUEST,
             );
         }
     }

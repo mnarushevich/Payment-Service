@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
-class RefundChargeController extends Controller
+class RefundChargeController
 {
-    public function __invoke(string $paymentId, Request $request)
+    public function __invoke(string $paymentId, Request $request, UserService $userService): JsonResponse
     {
-        //$externalUserId = $request->input('internal_user_id');
-        $externalUserId = '9e107d9d-372b-4a6c-8a5b-36d2f3a7b432'; //TODO
-        $user = User::query()->where('internal_user_id', $externalUserId)->first();
+        $user = $userService->getByInternalUserId($request->input('auth_user_id'));
 
         try {
             $user->refund($paymentId);
 
             return response()->json(['message' => 'Payment refunded.']);
         } catch (\Exception $e) {
-            // Log::error($e->getMessage());
+            Log::error($e->getMessage());
 
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['message' => 'Failed to refund payment.'], Response::HTTP_BAD_REQUEST);
         }
     }
 }
