@@ -23,7 +23,7 @@ Route::middleware(['auth.token'])->group(function () {
     Route::get('/payment-method/list', GetPaymentMethodController::class)->name('payment-method.list');
     Route::post('/payment-method/add', AddPaymentMethodController::class)->name('payment-method.add');
 
-    Route::post('/customer', CreateCustomerController::class)->name('customer.create');
+    Route::post('/customer', CreateCustomerController::class)->name('customer.create'); //TODO Convert to Kafka message listener
 
     Route::post('/subscription', CreateSubscriptionController::class)->name('subscription.create');
     Route::post('/subscription/cancel', CancelSubscriptionController::class)->name('subscription.cancel');
@@ -36,12 +36,12 @@ Route::get('/charge/refund/{paymentId}', RefundChargeController::class)->name('c
 
 Route::get('/payment/checkout', CheckoutController::class)->name('payment.checkout');
 
-Route::get('/payment/checkout-success', function () {
-    return response()->json(['status' => 'Payment was successful.']);
+Route::get('/payment/success', function () {
+    return response()->json(['message' => 'Payment was successful.']);
 })->name('payment.success');
 
-Route::get('/payment/checkout-cancel', function () {
-    return response()->json(['status' => 'Payment was cancelled.']);
+Route::get('/payment/cancel', function () {
+    return response()->json(['message' => 'Payment was cancelled.']);
 })->name('payment.cancel');
 
 Route::post('/stripe/webhook', HandleWebhookController::class);
