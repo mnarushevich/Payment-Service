@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-class SingleChargeController
+final class SingleChargeController
 {
     public function __invoke(Request $request, UserService $userService): JsonResponse
     {

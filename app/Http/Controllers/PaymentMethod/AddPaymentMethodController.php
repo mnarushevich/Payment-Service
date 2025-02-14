@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Laravel\Cashier\Cashier;
 use Symfony\Component\HttpFoundation\Response;
 
-class AddPaymentMethodController
+final class AddPaymentMethodController
 {
     public function __invoke(Request $request, UserService $userService): JsonResponse
     {

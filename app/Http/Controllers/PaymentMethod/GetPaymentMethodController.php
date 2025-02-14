@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-class GetPaymentMethodController
+final class GetPaymentMethodController
 {
     public function __invoke(Request $request): JsonResponse
     {

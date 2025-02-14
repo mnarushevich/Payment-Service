@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreateSubscriptionController
+final class CreateSubscriptionController
 {
     public function __invoke(Request $request, UserService $userService): JsonResponse
     {
