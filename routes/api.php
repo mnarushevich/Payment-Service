@@ -5,10 +5,10 @@ declare(strict_types=1);
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\Customer\CreateCustomerController;
 use App\Http\Controllers\HandleWebhookController;
+use App\Http\Controllers\Payment\RefundChargeController;
+use App\Http\Controllers\Payment\SingleChargeController;
 use App\Http\Controllers\PaymentMethod\AddPaymentMethodController;
 use App\Http\Controllers\Paymentmethod\GetPaymentMethodController;
-use App\Http\Controllers\RefundChargeController;
-use App\Http\Controllers\SingleChargeController;
 use App\Http\Controllers\Subscription\CancelSubscriptionController;
 use App\Http\Controllers\Subscription\CreateSubscriptionController;
 use App\Http\Controllers\Subscription\EndSubscriptionTrialController;
@@ -29,10 +29,10 @@ Route::middleware(['auth.token'])->group(function () {
     Route::post('/subscription/cancel', CancelSubscriptionController::class)->name('subscription.cancel');
     Route::post('/subscription/resume', ResumeSubscriptionController::class)->name('subscription.resume');
     Route::post('/subscription/end-trial', EndSubscriptionTrialController::class)->name('subscription.end-trial');
-});
 
-Route::post('/charge', SingleChargeController::class)->name('charge');
-Route::get('/charge/refund/{paymentId}', RefundChargeController::class)->name('charge.refund');
+    Route::post('/charge', SingleChargeController::class)->name('charge');
+    Route::post('/charge/refund', RefundChargeController::class)->name('charge.refund');
+});
 
 Route::get('/payment/checkout', CheckoutController::class)->name('payment.checkout');
 

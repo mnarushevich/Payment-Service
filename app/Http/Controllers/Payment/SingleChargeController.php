@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Payment;
 
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
@@ -20,13 +20,14 @@ class SingleChargeController
             ]
         );
         $user = $userService->getByInternalUserId($request->input('auth_user_id'));
-        $paymentMethod = $user->defaultPaymentMethod();
-
-        if ($paymentMethod === null) {
-            return response()->json(['message' => 'No payment method found.'], Response::HTTP_NOT_FOUND);
-        }
 
         try {
+            $paymentMethod = $user->defaultPaymentMethod();
+
+            if ($paymentMethod === null) {
+                return response()->json(['message' => 'No payment method found.'], Response::HTTP_NOT_FOUND);
+            }
+
             $payment = $user->charge(
                 $request->input('amount'),
                 $paymentMethod->id,
@@ -43,7 +44,7 @@ class SingleChargeController
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
-            return response()->json(['message' => 'Payment failed.'], Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => 'Payment failed.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
