@@ -23,7 +23,7 @@ Route::middleware(['auth.token'])->group(function () {
     Route::get('/payment-method/list', GetPaymentMethodController::class)->name('payment-method.list');
     Route::post('/payment-method/add', AddPaymentMethodController::class)->name('payment-method.add');
 
-    Route::post('/customer', CreateCustomerController::class)->name('customer.create'); //TODO Convert to Kafka message listener
+    Route::post('/customer', CreateCustomerController::class)->name('customer.create'); // TODO Convert to Kafka message listener
 
     Route::post('/subscription', CreateSubscriptionController::class)->name('subscription.create');
     Route::post('/subscription/cancel', CancelSubscriptionController::class)->name('subscription.cancel');

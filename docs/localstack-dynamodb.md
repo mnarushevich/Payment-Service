@@ -100,38 +100,8 @@ Use the following:
 aws --endpoint-url=http://localhost:4566 dynamodb create-table  --table-name Users --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
 ```
 
-6. Test DynamoDB in Laravel
 
-Use the AWS SDK in Laravel to interact with DynamoDB:
-
-Example Usage:
-```php
-use Aws\DynamoDb\DynamoDbClient;
-
-Route::get('/test-dynamodb', function () {
-    $client = new DynamoDbClient([
-        'region' => config('services.dynamodb.region'),
-        'version' => 'latest',
-        'endpoint' => config('services.dynamodb.endpoint'),
-        'credentials' => [
-            'key' => config('services.dynamodb.key'),
-            'secret' => config('services.dynamodb.secret'),
-        ],
-    ]);
-
-    $result = $client->putItem([
-        'TableName' => 'Users',
-        'Item' => [
-            'id' => ['S' => '123'],
-            'name' => ['S' => 'John Doe'],
-        ],
-    ]);
-
-    return response()->json($result);
-});
-```
-
-7. Debugging
+4. Debugging
 ###### To inspect the data, use the AWS CLI:
 
 ```bash
