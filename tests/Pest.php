@@ -11,10 +11,25 @@
 |
 */
 
-pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+use Database\Factories\UserFactory;
+use Tests\Integration\BaseWebTestCase;
 
+pest()->extend(BaseWebTestCase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->in('Integration');
+
+pest()->beforeEach(function () {
+    $this->mockStripeId = 'cus_Rl5cRkOlS4PAQ3';
+    if (in_array('no-auth', test()->groups())) {
+        return;
+    }
+    $this->user = UserFactory::new()->create(
+        [
+            'internal_user_id' => fake()->uuid(),
+            'stripe_id' => $this->mockStripeId,
+        ]
+    );
+})->in('Integration');
 /*
 |--------------------------------------------------------------------------
 | Expectations

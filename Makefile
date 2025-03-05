@@ -12,6 +12,9 @@ up:
 rebuild:
 	docker compose up -d --no-deps --build app
 
+setup-hooks:
+	docker exec -it payment_service_app git config core.hooksPath .githooks
+
 exec:
 	docker exec -it payment_service_app bash
 
@@ -20,3 +23,6 @@ db-seed:
 
 stop:
 	./vendor/bin/sail down
+
+run-tests:
+	docker exec payment_service_app php artisan test --colors=always --env=testing

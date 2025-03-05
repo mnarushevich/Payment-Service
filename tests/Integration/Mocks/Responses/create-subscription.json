@@ -1,0 +1,23 @@
+{
+    "type": "silver",
+    "stripe_id": "sub_1QrvsCIu1L5yismLIJqRX1W1",
+    "stripe_status": "active",
+    "stripe_price": "price_1QqGZmIu1L5yismL1EUjZEbo",
+    "quantity": 1,
+    "trial_ends_at": null,
+    "ends_at": null,
+    "user_id": 1,
+    "updated_at": "2025-02-13T06:26:12.000000Z",
+    "created_at": "2025-02-13T06:26:10.000000Z",
+    "id": 1,
+    "owner": {
+        "id": 1,
+        "internal_user_id": "dfd2751b-f477-463c-a61d-021dae4c03a3",
+        "created_at": "2025-02-12T06:28:45.000000Z",
+        "updated_at": "2025-02-12T17:40:27.000000Z",
+        "stripe_id": "cus_Rl5cRkOlS4PAQ3",
+        "pm_type": "visa",
+        "pm_last_four": "4242",
+        "trial_ends_at": null
+    }
+}

@@ -1,29 +1,30 @@
 {
-    "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "maksim-narushevich/pricing-service",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Pricing Service",
     "keywords": [
         "laravel",
         "framework"
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
-        "aws/aws-sdk-php": "^3.336",
-        "baopham/dynamodb": "^6.5",
-        "laravel/framework": "^11.31",
-        "laravel/tinker": "^2.9"
+        "php": "^8.4",
+        "aws/aws-sdk-php": "^3.341",
+        "laravel/cashier": "^15.6",
+        "laravel/framework": "^v12.1.0",
+        "laravel/tinker": "^2.10",
+        "mateusjunges/laravel-kafka": "^2.5"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.23",
-        "laravel/pail": "^1.1",
-        "laravel/pint": "^1.13",
+        "fakerphp/faker": "^1.24",
+        "laravel/pail": "^1.2",
+        "laravel/pint": "^1.18",
         "laravel/sail": "^1.39",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.1",
+        "nunomaduro/collision": "^8.5",
         "pestphp/pest": "^3.7",
-        "pestphp/pest-plugin-laravel": "^3.0"
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "phpstan/phpstan": "^2.1"
     },
     "autoload": {
         "psr-4": {
