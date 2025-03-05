@@ -12,7 +12,8 @@
         "aws/aws-sdk-php": "^3.341",
         "laravel/cashier": "^15.6",
         "laravel/framework": "^v12.1.0",
-        "laravel/tinker": "^2.10"
+        "laravel/tinker": "^2.10",
+        "mateusjunges/laravel-kafka": "^2.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
