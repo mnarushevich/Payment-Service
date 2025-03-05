@@ -1,5 +1,5 @@
 {
-    "id": "pi_3QsItpIu1L5yismL25HZqkG4",
+    "id": "pi_test_payment",
     "object": "payment_intent",
     "amount": 500,
     "amount_capturable": 0,
@@ -16,7 +16,7 @@
     "canceled_at": null,
     "cancellation_reason": null,
     "capture_method": "automatic",
-    "client_secret": "pi_3QsItpIu1L5yismL25HZqkG4_secret_EiVSWSlzDEpqjNQu4tRriMtru",
+    "client_secret": "pi_test_secret",
     "confirmation_method": "automatic",
     "created": 1739516481,
     "currency": "usd",
@@ -24,14 +24,14 @@
     "description": null,
     "invoice": null,
     "last_payment_error": null,
-    "latest_charge": "ch_3QsItpIu1L5yismL2UfdesAn",
+    "latest_charge": "ch_test_latest_charge",
     "livemode": false,
     "metadata": [],
     "next_action": null,
     "on_behalf_of": null,
-    "payment_method": "pm_1Qrk5nIu1L5yismL3TdGdLkh",
+    "payment_method": "test_payment_method",
     "payment_method_configuration_details": {
-        "id": "pmc_1QqFXIIu1L5yismLSrQ8XLpW",
+        "id": "pmc_test_payment_method_configuration_details",
         "parent": null
     },
     "payment_method_options": {
