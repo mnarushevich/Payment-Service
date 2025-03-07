@@ -22,9 +22,10 @@ services:
             - '.:/var/www/html'
         networks:
             - sbc
+            - sbs-shared
         depends_on:
             - payment_mysql
-            - payment_localstack
+            - localstack
 
     payment_mysql:
         image: 'mysql/mysql-server:8.0'
@@ -43,6 +44,7 @@ services:
             - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
             - sbc
+            - sbs-shared
         healthcheck:
             test:
                 - CMD
@@ -52,7 +54,7 @@ services:
             retries: 3
             timeout: 5s
 
-    payment_localstack:
+    localstack:
         image: localstack/localstack:latest
         container_name: localstack
         platform: linux/x86_64
@@ -68,8 +70,11 @@ services:
             - "/var/run/docker.sock:/var/run/docker.sock"
         networks:
             - sbc
+            - sbs-shared
 
 networks:
+    sbs-shared:
+        external: true
     sbc:
         driver: bridge
 volumes:
