@@ -56,7 +56,7 @@ services:
 
     localstack:
         image: localstack/localstack:latest
-        container_name: localstack
+        container_name: localstack_payment_service
         platform: linux/x86_64
         ports:
             - "4566:4566" # Gateway
