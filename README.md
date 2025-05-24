@@ -1,4 +1,4 @@
-## Siam Brew Payment Service
+## Payment Service
 
 # Service for Handling  Stripe Subscriptions & Payments
 
