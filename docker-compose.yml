@@ -1,31 +1,33 @@
 services:
-    payment_service:
-        build:
-            context: './docker/8.4'
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: 'sail-8.4/app'
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
-        ports:
-            - '${APP_PORT:-8702}:80'
-            - '${VITE_PORT:-5174}:${VITE_PORT:-5173}'
-        container_name: payment_service_app
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-        volumes:
-            - '.:/var/www/html'
-        networks:
-            - sbc
-            - sbs-shared
-        depends_on:
-            - payment_mysql
-            - localstack
+
+#    # Uncomment the following section to enable the auth service via Docker
+#    payment_service:
+#        build:
+#            context: './docker/8.4'
+#            dockerfile: Dockerfile
+#            args:
+#                WWWGROUP: '${WWWGROUP}'
+#        image: 'sail-8.4/app'
+#        extra_hosts:
+#            - 'host.docker.internal:host-gateway'
+#        ports:
+#            - '${APP_PORT:-8702}:80'
+#            - '${VITE_PORT:-5174}:${VITE_PORT:-5173}'
+#        container_name: payment_service_app
+#        environment:
+#            WWWUSER: '${WWWUSER}'
+#            LARAVEL_SAIL: 1
+#            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+#            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+#            IGNITION_LOCAL_SITES_PATH: '${PWD}'
+#        volumes:
+#            - '.:/var/www/html'
+#        networks:
+#            - herd
+#            - herd-shared
+#        depends_on:
+#            - payment_mysql
+#            - localstack
 
     payment_mysql:
         image: 'mysql/mysql-server:8.0'
@@ -40,11 +42,11 @@ services:
             MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
-            - 'sbc-payment-db-mysql:/var/lib/mysql'
+            - 'herd-payment-db-mysql:/var/lib/mysql'
             - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
-            - sbc
-            - sbs-shared
+            - herd
+            - herd-shared
         healthcheck:
             test:
                 - CMD
@@ -69,14 +71,14 @@ services:
             - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
             - "/var/run/docker.sock:/var/run/docker.sock"
         networks:
-            - sbc
-            - sbs-shared
+            - herd
+            - herd-shared
 
 networks:
-    sbs-shared:
+    herd-shared:
         external: true
-    sbc:
+    herd:
         driver: bridge
 volumes:
-    sbc-payment-db-mysql:
+    herd-payment-db-mysql:
         driver: local
