@@ -11,12 +11,13 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: true
       matrix:
         php: [ 8.4 ]
 
-    name: Pricing ServiceTests
+    name: Tests
 
     steps:
       - name: Checkout
