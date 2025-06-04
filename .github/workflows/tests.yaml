@@ -35,7 +35,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, curl, libxml, mbstring, zip
+          extensions: json, curl, libxml, mbstring, zip, rdkafka
           tools: composer:v2
           coverage: xdebug
 
