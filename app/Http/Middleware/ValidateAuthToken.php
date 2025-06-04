@@ -7,22 +7,23 @@ namespace App\Http\Middleware;
 use Closure;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ValidateAuthToken
 {
-    private const ERROR_TOKEN_NOT_PROVIDED = 'Token not provided.';
+    private const string ERROR_TOKEN_NOT_PROVIDED = 'Token not provided.';
 
-    private const ERROR_TOKEN_EXPIRED = 'Token has expired';
+    private const string ERROR_TOKEN_EXPIRED = 'Token has expired';
 
-    private const ERROR_INVALID_TOKEN_PAYLOAD = 'Invalid token payload';
+    private const string ERROR_INVALID_TOKEN_PAYLOAD = 'Invalid token payload';
 
-    private const ERROR_INVALID_TOKEN_FORMAT = 'Invalid token format';
+    private const string ERROR_INVALID_TOKEN_FORMAT = 'Invalid token format';
 
     /**
      * @throws AuthenticationException
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): JsonResponse
     {
         $authHeader = $request->header('Authorization');
         $tokenType = 'Bearer';
@@ -56,8 +57,8 @@ class ValidateAuthToken
             }
 
             return $payload;
-        } catch (Exception $e) {
-            throw new AuthenticationException($e->getMessage());
+        } catch (Exception $exception) {
+            throw new AuthenticationException($exception->getMessage());
         }
     }
 

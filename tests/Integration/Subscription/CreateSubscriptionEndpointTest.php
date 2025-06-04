@@ -10,12 +10,12 @@ use Mockery;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
-afterEach(function () {
+afterEach(function (): void {
     Mockery::close();
 });
 
-describe('POST /subscription', function () {
-    it('rejects when token is not provided', function () {
+describe('POST /subscription', function (): void {
+    it('rejects when token is not provided', function (): void {
         $this->postJson(getUrl('subscription.create'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
@@ -26,7 +26,7 @@ describe('POST /subscription', function () {
             );
     });
 
-    it('returns 404 in case user from JWT token not found', function () {
+    it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
         $this->postJson(
@@ -40,11 +40,11 @@ describe('POST /subscription', function () {
             ->assertStatus(Response::HTTP_NOT_FOUND)
             ->assertJson([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => "User with ID $internalUserId not found.",
+                'message' => sprintf('User with ID %s not found.', $internalUserId),
             ]);
     });
 
-    it('returns 400 in case invalid request', function () {
+    it('returns 400 in case invalid request', function (): void {
         $token = generateJWTToken($this->user->internal_user_id);
         $this->postJson(
             getUrl('subscription.create'),
@@ -60,7 +60,7 @@ describe('POST /subscription', function () {
             ]);
     });
 
-    it('returns 400 in case already subscribed to this type', function () {
+    it('returns 400 in case already subscribed to this type', function (): void {
         $mockPaymentMethodType = 'silver';
         $stripeMock = Mockery::mock(StripeClient::class);
 
@@ -80,11 +80,11 @@ describe('POST /subscription', function () {
         )
             ->assertStatus(Response::HTTP_BAD_REQUEST)
             ->assertJson([
-                'message' => "User already subscribed to $mockPaymentMethodType subscription.",
+                'message' => sprintf('User already subscribed to %s subscription.', $mockPaymentMethodType),
             ]);
     });
 
-    it('returns 400 in case provided payment method ID not found', function () {
+    it('returns 400 in case provided payment method ID not found', function (): void {
         $mockPaymentMethodId = 'pm_12345';
         $mockPaymentMethodType = 'silver';
         $stripeMock = Mockery::mock(StripeClient::class);
@@ -110,7 +110,7 @@ describe('POST /subscription', function () {
             ]);
     });
 
-    it('returns 400 in case default payment method not found', function () {
+    it('returns 400 in case default payment method not found', function (): void {
         $mockPaymentMethodType = 'silver';
         $stripeMock = Mockery::mock(StripeClient::class);
 
@@ -136,7 +136,7 @@ describe('POST /subscription', function () {
             ]);
     });
 
-    it('creates a subscription with default payment method', function () {
+    it('creates a subscription with default payment method', function (): void {
         $mockPaymentMethodType = 'silver';
         $defaultPaymentMethodId = 'default_payment_method_id';
         $stripeMock = Mockery::mock(StripeClient::class);
@@ -172,7 +172,7 @@ describe('POST /subscription', function () {
             ->assertJson(['subscription' => $mockStripeResponse]);
     });
 
-    it('creates a subscription with provided payment method and with trial', function () {
+    it('creates a subscription with provided payment method and with trial', function (): void {
         $mockPaymentMethodType = 'silver';
         $mockPaymentMethodId = 'pm_12345';
         $stripeMock = Mockery::mock(StripeClient::class);
@@ -208,7 +208,7 @@ describe('POST /subscription', function () {
             ->assertJson(['subscription' => $mockStripeResponse]);
     });
 
-    it('returns 500 in case stripe request exception', function () {
+    it('returns 500 in case stripe request exception', function (): void {
         $mockPaymentMethodType = 'silver';
         $mockPaymentMethodId = 'pm_12345';
         $stripeMock = Mockery::mock(StripeClient::class);

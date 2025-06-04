@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -18,11 +20,12 @@ pest()->extend(BaseWebTestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Integration');
 
-pest()->beforeEach(function () {
+pest()->beforeEach(function (): void {
     $this->mockStripeId = 'cus_Rl5cRkOlS4PAQ3';
     if (in_array('no-auth', test()->groups())) {
         return;
     }
+
     $this->user = UserFactory::new()->create(
         [
             'internal_user_id' => fake()->uuid(),
@@ -41,9 +44,7 @@ pest()->beforeEach(function () {
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
+expect()->extend('toBeOne', fn () => $this->toBe(1));
 
 /*
 |--------------------------------------------------------------------------
@@ -56,7 +57,7 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function something(): void
 {
     // ..
 }

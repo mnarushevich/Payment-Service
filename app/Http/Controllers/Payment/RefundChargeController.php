@@ -21,8 +21,8 @@ final class RefundChargeController
             $user->refund($request->input('payment_id'));
 
             return response()->json(['message' => 'Payment refunded.']);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
 
             return response()->json(['message' => 'Failed to refund payment.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

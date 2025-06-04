@@ -20,7 +20,7 @@ class ApiExceptionHandler
             return null;
         }
 
-        $status = match (get_class($exception)) {
+        $status = match ($exception::class) {
             AuthenticationException::class => Response::HTTP_UNAUTHORIZED,
             ValidationException::class => Response::HTTP_BAD_REQUEST,
             NotFoundHttpException::class => Response::HTTP_NOT_FOUND,

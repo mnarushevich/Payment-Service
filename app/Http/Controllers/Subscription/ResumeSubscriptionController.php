@@ -28,8 +28,8 @@ final class ResumeSubscriptionController
 
                 return response()->json(['message' => 'Subscription resumed.']);
             }
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
 
             return response()->json(['message' => 'Failed to resume subscription.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

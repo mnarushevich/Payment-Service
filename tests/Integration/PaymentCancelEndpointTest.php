@@ -6,8 +6,8 @@ namespace Tests\Integration\Auth;
 
 use Symfony\Component\HttpFoundation\Response;
 
-describe('GET /payment/cancel', function () {
-    it(' checks that payment cancelled page is available', function () {
+describe('GET /payment/cancel', function (): void {
+    it(' checks that payment cancelled page is available', function (): void {
         $this->get(
             getUrl('payment.cancel')
         )

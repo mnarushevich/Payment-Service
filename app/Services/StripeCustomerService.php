@@ -32,8 +32,8 @@ class StripeCustomerService
                     'country' => 'GB',
                 ],
             ]);
-        } catch (\Exception $e) {
-            throw new StripeCustomerException($e->getMessage());
+        } catch (\Exception $exception) {
+            throw new StripeCustomerException($exception->getMessage());
         }
     }
 }

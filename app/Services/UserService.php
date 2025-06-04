@@ -14,7 +14,7 @@ class UserService
         $user = User::query()->where('internal_user_id', $internalUserId)->first();
 
         if (! $user) {
-            throw new ModelNotFoundException("User with ID $internalUserId not found.");
+            throw new ModelNotFoundException(sprintf('User with ID %s not found.', $internalUserId));
         }
 
         return $user;

@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         apiPrefix: 'api/v1',
     )
-    ->withMiddleware(function (Middleware $middleware) {
+    ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: [
             'stripe/*',
         ]);
@@ -25,8 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.token' => ValidateAuthToken::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (Throwable $e, Request $request) {
-            return ApiExceptionHandler::handle($e, $request);
-        });
+    ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(fn (Throwable $e, Request $request): ?\Symfony\Component\HttpFoundation\Response => ApiExceptionHandler::handle($e, $request));
     })->create();

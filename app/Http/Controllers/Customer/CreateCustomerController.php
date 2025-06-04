@@ -24,8 +24,8 @@ final class CreateCustomerController
             $stripeCustomer = $stripeCustomerService->createCustomer($user);
 
             return response()->json(['message' => $stripeCustomer]);
-        } catch (StripeCustomerException $e) {
-            Log::error($e->getMessage());
+        } catch (StripeCustomerException $stripeCustomerException) {
+            Log::error($stripeCustomerException->getMessage());
 
             return response()->json(['message' => 'Failed to create customer.'], Response::HTTP_BAD_REQUEST);
         }

@@ -41,8 +41,8 @@ final class AddPaymentMethodController
                 'message' => 'Payment method added successfully',
                 'payment_method' => $setupIntent->payment_method,
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 }
