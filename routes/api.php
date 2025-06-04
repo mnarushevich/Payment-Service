@@ -8,7 +8,7 @@ use App\Http\Controllers\HandleWebhookController;
 use App\Http\Controllers\Payment\RefundChargeController;
 use App\Http\Controllers\Payment\SingleChargeController;
 use App\Http\Controllers\PaymentMethod\AddPaymentMethodController;
-use App\Http\Controllers\Paymentmethod\GetPaymentMethodController;
+use App\Http\Controllers\PaymentMethod\GetPaymentMethodController;
 use App\Http\Controllers\Subscription\CancelSubscriptionController;
 use App\Http\Controllers\Subscription\CreateSubscriptionController;
 use App\Http\Controllers\Subscription\EndSubscriptionTrialController;
