@@ -9,12 +9,12 @@ use Stripe\Collection;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
-afterEach(function () {
+afterEach(function (): void {
     Mockery::close();
 });
 
-describe('GET /payment-method/list', function () {
-    it('rejects when token is not provided', function () {
+describe('GET /payment-method/list', function (): void {
+    it('rejects when token is not provided', function (): void {
         $this->getJson(getUrl('payment-method.list'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
@@ -25,18 +25,18 @@ describe('GET /payment-method/list', function () {
             );
     });
 
-    it('returns 404 in case user from JWT token not found', function () {
+    it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
         $this->getJson(getUrl('payment-method.list'), headers: getAuthorizationHeader($token))
             ->assertStatus(Response::HTTP_NOT_FOUND)
             ->assertJson([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => "User with ID $internalUserId not found.",
+                'message' => sprintf('User with ID %s not found.', $internalUserId),
             ]);
     });
 
-    it('returns payment for valid token and existing stripe customer', function () {
+    it('returns payment for valid token and existing stripe customer', function (): void {
         $stripeMock = Mockery::mock(StripeClient::class);
         $mockStripeResponse = getMockData('get-payment-methods');
         $mockCollection = new Collection;

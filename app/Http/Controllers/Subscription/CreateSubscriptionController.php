@@ -25,7 +25,7 @@ final class CreateSubscriptionController
 
         if ($user->subscribed($subscriptionType)) {
             return response()->json(
-                ['message' => "User already subscribed to $subscriptionType subscription."],
+                ['message' => sprintf('User already subscribed to %s subscription.', $subscriptionType)],
                 Response::HTTP_BAD_REQUEST,
             );
         }
@@ -43,10 +43,10 @@ final class CreateSubscriptionController
                     return response()->json(['message' => 'Payment method not found.'], Response::HTTP_BAD_REQUEST);
                 }
             }
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
 
-            return response()->json(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
         if (! $paymentMethod) {
@@ -70,8 +70,8 @@ final class CreateSubscriptionController
             );
 
             return response()->json(['subscription' => $subscription]);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
 
             return response()->json(['message' => 'Failed to create subscription.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

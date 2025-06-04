@@ -10,12 +10,12 @@ use Mockery;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
-afterEach(function () {
+afterEach(function (): void {
     Mockery::close();
 });
 
-describe('POST /subscription/end-trial', function () {
-    it('rejects when token is not provided', function () {
+describe('POST /subscription/end-trial', function (): void {
+    it('rejects when token is not provided', function (): void {
         $this->postJson(getUrl('subscription.end-trial'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
@@ -26,7 +26,7 @@ describe('POST /subscription/end-trial', function () {
             );
     });
 
-    it('returns 404 in case user from JWT token not found', function () {
+    it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
         $this->postJson(
@@ -37,11 +37,11 @@ describe('POST /subscription/end-trial', function () {
             ->assertStatus(Response::HTTP_NOT_FOUND)
             ->assertJson([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => "User with ID $internalUserId not found.",
+                'message' => sprintf('User with ID %s not found.', $internalUserId),
             ]);
     });
 
-    it('returns 400 in case invalid request', function () {
+    it('returns 400 in case invalid request', function (): void {
         $token = generateJWTToken($this->user->internal_user_id);
         $this->postJson(
             getUrl('subscription.end-trial'),
@@ -54,7 +54,7 @@ describe('POST /subscription/end-trial', function () {
             ]);
     });
 
-    it('returns 404 in case active subscription not found', function () {
+    it('returns 404 in case active subscription not found', function (): void {
         $mockPaymentMethodType = 'silver';
         $stripeMock = Mockery::mock(StripeClient::class);
 
@@ -79,7 +79,7 @@ describe('POST /subscription/end-trial', function () {
             ->assertJson(['message' => 'Subscription not found.']);
     });
 
-    it('skips ending trial in case subscription is not on trial period', function () {
+    it('skips ending trial in case subscription is not on trial period', function (): void {
         $mockPaymentMethodType = 'silver';
         $stripeMock = Mockery::mock(StripeClient::class);
 
@@ -104,7 +104,7 @@ describe('POST /subscription/end-trial', function () {
             ->assertJson(['message' => 'Subscription is not on trial.']);
     });
 
-    it('ends subscription trial', function () {
+    it('ends subscription trial', function (): void {
         $mockPaymentMethodType = 'silver';
         $stripeMock = Mockery::mock(StripeClient::class);
 
@@ -130,7 +130,7 @@ describe('POST /subscription/end-trial', function () {
             ->assertJson(['message' => 'Subscription trial ended.']);
     });
 
-    it('returns 500 in case stripe request exception', function () {
+    it('returns 500 in case stripe request exception', function (): void {
         $mockPaymentMethodType = 'silver';
         $stripeMock = Mockery::mock(StripeClient::class);
 

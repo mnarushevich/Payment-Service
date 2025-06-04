@@ -6,8 +6,8 @@ namespace Tests\Integration\Auth;
 
 use Symfony\Component\HttpFoundation\Response;
 
-describe('GET /healthcheck', function () {
-    it('checks that application status is OK', function () {
+describe('GET /healthcheck', function (): void {
+    it('checks that application status is OK', function (): void {
         $this->get(
             getUrl('healthcheck')
         )

@@ -26,7 +26,7 @@ final class CancelSubscriptionController
 
         if ($user->subscribed($subscriptionType)) {
             return response()->json(
-                ['message' => "User already subscribed to $subscriptionType subscription."],
+                ['message' => sprintf('User already subscribed to %s subscription.', $subscriptionType)],
                 Response::HTTP_BAD_REQUEST,
             );
         }
@@ -43,14 +43,14 @@ final class CancelSubscriptionController
             if ($cancelAfterNumberDays) {
                 $user->subscription($subscriptionType)->cancelAt(now()->addDays($cancelAfterNumberDays));
 
-                return response()->json(['message' => "Subscription will be cancelled after $cancelAfterNumberDays days."]);
+                return response()->json(['message' => sprintf('Subscription will be cancelled after %s days.', $cancelAfterNumberDays)]);
             }
 
             $user->subscription($subscriptionType)->cancel();
 
             return response()->json(['message' => 'Subscription cancelled.']);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
 
             return response()->json(['message' => 'Failed to cancel subscription.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

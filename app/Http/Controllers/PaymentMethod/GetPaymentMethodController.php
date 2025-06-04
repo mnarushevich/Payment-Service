@@ -19,15 +19,15 @@ final class GetPaymentMethodController
         $user = User::query()->where('internal_user_id', $internalUserId)->first();
 
         if (! $user) {
-            throw new ModelNotFoundException("User with ID $internalUserId not found.");
+            throw new ModelNotFoundException(sprintf('User with ID %s not found.', $internalUserId));
         }
 
         try {
             return response()->json(['payment_methods' => $user->paymentMethods()]);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
 
-            return response()->json(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 }

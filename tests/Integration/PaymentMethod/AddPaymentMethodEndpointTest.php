@@ -9,12 +9,12 @@ use Mockery;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
-afterEach(function () {
+afterEach(function (): void {
     Mockery::close();
 });
 
-describe('POST /payment-method/add', function () {
-    it('rejects when token is not provided', function () {
+describe('POST /payment-method/add', function (): void {
+    it('rejects when token is not provided', function (): void {
         $this->postJson(getUrl('payment-method.add'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
@@ -25,7 +25,7 @@ describe('POST /payment-method/add', function () {
             );
     });
 
-    it('returns 404 in case user from JWT token not found', function () {
+    it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
         $this->postJson(
@@ -39,11 +39,11 @@ describe('POST /payment-method/add', function () {
             ->assertStatus(Response::HTTP_NOT_FOUND)
             ->assertJson([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => "User with ID $internalUserId not found.",
+                'message' => sprintf('User with ID %s not found.', $internalUserId),
             ]);
     });
 
-    it('returns 400 in case invalid request', function () {
+    it('returns 400 in case invalid request', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
         $this->postJson(
@@ -57,11 +57,12 @@ describe('POST /payment-method/add', function () {
             ]);
     });
 
-    it('returns creates payment for valid payment method and set it as default', function () {
+    it('returns creates payment for valid payment method and set it as default', function (): void {
         $mockPaymentMethod = 'pm_card_visa';
         $stripeMock = Mockery::mock(StripeClient::class);
         $setupIntent = Mockery::mock();
         $setupIntent->payment_method = $mockPaymentMethod;
+
         $stripeMock->setupIntents = Mockery::mock();
         $stripeMock->setupIntents
             ->shouldReceive('create')

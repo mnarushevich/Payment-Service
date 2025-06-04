@@ -41,8 +41,8 @@ final class SingleChargeController
                     'payment' => $payment,
                 ],
             );
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
 
             return response()->json(['message' => 'Payment failed.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -35,8 +35,8 @@ final class CheckoutController
                 ]);
 
             return response()->json(['checkout' => $checkout]);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        } catch (\Exception $exception) {
+            Log::error($exception->getMessage());
 
             return response()->json(['message' => 'Failed to charge user.'], Response::HTTP_BAD_REQUEST);
         }

@@ -23,15 +23,15 @@ function generateJWTToken(string $internalUserId): string
         'internal_user_id' => $internalUserId,
     ]));
 
-    $signature = base64_encode(hash_hmac('sha256', "$header.$payload", $fake->uuid(), true));
+    $signature = base64_encode(hash_hmac('sha256', sprintf('%s.%s', $header, $payload), $fake->uuid(), true));
 
-    return "$header.$payload.$signature";
+    return sprintf('%s.%s.%s', $header, $payload, $signature);
 }
 
 function getMockData(string $fileName, bool $isResponse = true): array
 {
     $mockDataFolder = $isResponse ? 'Responses' : 'Requests';
-    $json = file_get_contents(__DIR__."/Integration/Mocks/$mockDataFolder/$fileName.json");
+    $json = file_get_contents(__DIR__.sprintf('/Integration/Mocks/%s/%s.json', $mockDataFolder, $fileName));
 
     return json_decode($json, true);
 }
