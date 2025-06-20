@@ -11,9 +11,9 @@ use App\Services\StripeCustomerService;
 use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Contracts\ConsumerMessage;
 
-class UserCreatedHandler
+readonly class UserCreatedHandler
 {
-    public function __construct(private readonly StripeCustomerService $stripeCustomerService) {}
+    public function __construct(private StripeCustomerService $stripeCustomerService) {}
 
     public function __invoke(ConsumerMessage $message): void
     {
@@ -21,7 +21,7 @@ class UserCreatedHandler
         $userData = UserData::fromArray($messageBody);
 
         $user = User::firstOrCreate(
-            ['internal_user_id' => $userData->id],
+            ['internal_user_id' => $userData->uuid],
         );
 
         if ($user->wasRecentlyCreated) {
@@ -34,14 +34,14 @@ class UserCreatedHandler
                 ]);
             } catch (StripeCustomerException $e) {
                 Log::error('Failed to create Stripe customer.', [
-                    'internal_user_id' => $userData->id,
+                    'internal_user_id' => $userData->uuid,
                     'exception' => $e->getMessage(),
                 ]);
             }
         } else {
-            Log::warning('User with internal_user_id already exists, skipping Stripe customer creation.', [
-                'internal_user_id' => $userData->id,
-            ]);
+            Log::warning('User with internal_user_id already exists, skipping Stripe customer creation.',
+                ['internal_user_id' => $userData->uuid],
+            );
         }
     }
 }
