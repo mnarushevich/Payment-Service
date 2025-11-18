@@ -91,4 +91,11 @@ return [
      | Kafka message id key name
      */
     'message_id_key' => env('MESSAGE_ID_KEY', 'laravel-kafka::message-id'),
+
+    /*
+    | A list of all topics used in the application
+    */
+    'topics' => [
+        'user_created' => env('KAFKA_TOPIC_USER_CREATED', 'user.created'),
+    ],
 ];

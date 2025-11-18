@@ -6,31 +6,27 @@ namespace App\Services;
 
 use App\Exceptions\StripeCustomerException;
 use App\Models\User;
+use Illuminate\Support\Arr;
 use Stripe\Customer;
 
 class StripeCustomerService
 {
     /**
+     * @param  array<string, mixed>  $userData
+     *
      * @throws StripeCustomerException
      */
-    public function createCustomer(User $user): Customer
+    public function createCustomer(User $user, array $userData = []): Customer
     {
         try {
             return $user->createAsStripeCustomer([
-                'email' => 'maksim@test.com',
-                'name' => 'Maksim Narushevich',
-                'phone' => '+66812345678',
+                'email' => Arr::get($userData, 'email'),
+                'name' => sprintf('%s %s', Arr::get($userData, 'first_name'), Arr::get($userData, 'last_name')),
+                'phone' => '',
                 'metadata' => [
                     'internal_user_id' => $user->internal_user_id,
                 ],
-                'address' => [
-                    'line1' => '123 Example Street',
-                    'line2' => 'Apt 4B',
-                    'city' => 'London',
-                    'state' => 'England',
-                    'postal_code' => 'SW1A 2AA',
-                    'country' => 'GB',
-                ],
+                'address' => [],
             ]);
         } catch (\Exception $exception) {
             throw new StripeCustomerException($exception->getMessage());
