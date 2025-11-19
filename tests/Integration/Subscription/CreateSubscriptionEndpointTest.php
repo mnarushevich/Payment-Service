@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Tests\Integration\Auth;
 
 use App\Services\UserService;
+use Laravel\Cashier\PaymentMethod;
+use Laravel\Cashier\Subscription;
 use Laravel\Cashier\SubscriptionBuilder;
 use Mockery;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
+
+use function Pest\Laravel\postJson;
 
 afterEach(function (): void {
     Mockery::close();
@@ -16,7 +20,7 @@ afterEach(function (): void {
 
 describe('POST /subscription', function (): void {
     it('rejects when token is not provided', function (): void {
-        $this->postJson(getUrl('subscription.create'))
+        postJson(getUrl('subscription.create'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
                 [
@@ -29,7 +33,7 @@ describe('POST /subscription', function (): void {
     it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
-        $this->postJson(
+        postJson(
             getUrl('subscription.create'),
             data: [
                 'payment_method_id' => 'pm_12345',
@@ -46,7 +50,7 @@ describe('POST /subscription', function (): void {
 
     it('returns 400 in case invalid request', function (): void {
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.create'),
             data: [
                 'payment_method_id' => 12345,
@@ -73,7 +77,7 @@ describe('POST /subscription', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.create'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
@@ -91,7 +95,7 @@ describe('POST /subscription', function (): void {
 
         $userMock = Mockery::mock($this->user)->makePartial();
         $userMock->shouldReceive('subscribed')->once()->with($mockPaymentMethodType)->andReturnFalse();
-        $userMock->shouldReceive('findPaymentMethod')->once()->with($mockPaymentMethodId)->andReturnFalse();
+        $userMock->shouldReceive('findPaymentMethod')->once()->with($mockPaymentMethodId)->andReturnNull();
 
         $mockUserService = Mockery::mock(UserService::class)->makePartial();
         $mockUserService->shouldReceive('getByInternalUserId')->once()->andReturn($userMock);
@@ -99,7 +103,7 @@ describe('POST /subscription', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.create'),
             data: ['payment_method_id' => $mockPaymentMethodId, 'type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
@@ -125,7 +129,7 @@ describe('POST /subscription', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.create'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
@@ -140,16 +144,28 @@ describe('POST /subscription', function (): void {
         $mockPaymentMethodType = 'silver';
         $defaultPaymentMethodId = 'default_payment_method_id';
         $stripeMock = Mockery::mock(StripeClient::class);
-        $mockPaymentMethod = Mockery::mock();
-        $mockPaymentMethod->id = $defaultPaymentMethodId;
 
-        $mockStripeResponse = getMockData('create-subscription');
+        // Mock the Stripe payment method object
+        $mockStripePaymentMethod = Mockery::mock();
+        $mockStripePaymentMethod->id = $defaultPaymentMethodId;
+
+        // Mock the Cashier PaymentMethod with asStripePaymentMethod() method
+        $mockPaymentMethod = Mockery::mock(PaymentMethod::class);
+        $mockPaymentMethod->shouldReceive('asStripePaymentMethod')->once()->andReturn($mockStripePaymentMethod);
+
+        $mockStripeResponseData = getMockData('create-subscription');
+
+        // Mock the Subscription object that will be returned
+        $mockSubscription = Mockery::mock(Subscription::class);
+        $mockSubscription->shouldReceive('toArray')->andReturn($mockStripeResponseData);
+        $mockSubscription->shouldReceive('jsonSerialize')->andReturn($mockStripeResponseData);
+
         $mockSubscriptionBuilder = Mockery::mock(SubscriptionBuilder::class);
         $mockSubscriptionBuilder->shouldReceive('trialDays')->never();
         $mockSubscriptionBuilder->shouldReceive('create')->once()->with(
-            $mockPaymentMethod->id,
+            $defaultPaymentMethodId,
             ['metadata' => ['source' => 'payment-service']],
-        )->andReturn($mockStripeResponse);
+        )->andReturn($mockSubscription);
 
         $userMock = Mockery::mock($this->user)->makePartial();
         $userMock->shouldReceive('subscribed')->once()->with($mockPaymentMethodType)->andReturnFalse();
@@ -163,29 +179,41 @@ describe('POST /subscription', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.create'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
         )
             ->assertStatus(Response::HTTP_OK)
-            ->assertJson(['subscription' => $mockStripeResponse]);
+            ->assertJson(['subscription' => $mockStripeResponseData]);
     });
 
     it('creates a subscription with provided payment method and with trial', function (): void {
         $mockPaymentMethodType = 'silver';
         $mockPaymentMethodId = 'pm_12345';
         $stripeMock = Mockery::mock(StripeClient::class);
-        $mockPaymentMethod = Mockery::mock();
-        $mockPaymentMethod->id = $mockPaymentMethodId;
 
-        $mockStripeResponse = getMockData('create-subscription');
+        // Mock the Stripe payment method object
+        $mockStripePaymentMethod = Mockery::mock();
+        $mockStripePaymentMethod->id = $mockPaymentMethodId;
+
+        // Mock the Cashier PaymentMethod with asStripePaymentMethod() method
+        $mockPaymentMethod = Mockery::mock(PaymentMethod::class);
+        $mockPaymentMethod->shouldReceive('asStripePaymentMethod')->once()->andReturn($mockStripePaymentMethod);
+
+        $mockStripeResponseData = getMockData('create-subscription');
+
+        // Mock the Subscription object that will be returned
+        $mockSubscription = Mockery::mock(Subscription::class);
+        $mockSubscription->shouldReceive('toArray')->andReturn($mockStripeResponseData);
+        $mockSubscription->shouldReceive('jsonSerialize')->andReturn($mockStripeResponseData);
+
         $mockSubscriptionBuilder = Mockery::mock(SubscriptionBuilder::class);
         $mockSubscriptionBuilder->shouldReceive('trialDays')->once()->andReturn($mockSubscriptionBuilder);
         $mockSubscriptionBuilder->shouldReceive('create')->once()->with(
-            $mockPaymentMethod->id,
+            $mockPaymentMethodId,
             ['metadata' => ['source' => 'payment-service']],
-        )->andReturn($mockStripeResponse);
+        )->andReturn($mockSubscription);
 
         $userMock = Mockery::mock($this->user)->makePartial();
         $userMock->shouldReceive('subscribed')->once()->with($mockPaymentMethodType)->andReturnFalse();
@@ -199,21 +227,27 @@ describe('POST /subscription', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.create'),
             data: ['type' => $mockPaymentMethodType, 'trial_num_days' => 10, 'payment_method_id' => $mockPaymentMethodId],
             headers: getAuthorizationHeader($token),
         )
             ->assertStatus(Response::HTTP_OK)
-            ->assertJson(['subscription' => $mockStripeResponse]);
+            ->assertJson(['subscription' => $mockStripeResponseData]);
     });
 
     it('returns 500 in case stripe request exception', function (): void {
         $mockPaymentMethodType = 'silver';
         $mockPaymentMethodId = 'pm_12345';
         $stripeMock = Mockery::mock(StripeClient::class);
-        $mockPaymentMethod = Mockery::mock();
-        $mockPaymentMethod->id = $mockPaymentMethodId;
+
+        // Mock the Stripe payment method object
+        $mockStripePaymentMethod = Mockery::mock();
+        $mockStripePaymentMethod->id = $mockPaymentMethodId;
+
+        // Mock the Cashier PaymentMethod with asStripePaymentMethod() method
+        $mockPaymentMethod = Mockery::mock(PaymentMethod::class);
+        $mockPaymentMethod->shouldReceive('asStripePaymentMethod')->never();
 
         $mockSubscriptionBuilder = Mockery::mock(SubscriptionBuilder::class);
         $mockSubscriptionBuilder->shouldReceive('trialDays')->never();
@@ -231,7 +265,7 @@ describe('POST /subscription', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.create'),
             data: ['type' => $mockPaymentMethodType, 'payment_method_id' => $mockPaymentMethodId],
             headers: getAuthorizationHeader($token),

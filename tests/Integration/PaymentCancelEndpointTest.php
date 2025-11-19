@@ -6,9 +6,11 @@ namespace Tests\Integration\Auth;
 
 use Symfony\Component\HttpFoundation\Response;
 
+use function Pest\Laravel\getJson;
+
 describe('GET /payment/cancel', function (): void {
     it(' checks that payment cancelled page is available', function (): void {
-        $this->get(
+        getJson(
             getUrl('payment.cancel')
         )
             ->assertStatus(Response::HTTP_OK)

@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.4 ]
+        php: [8.5]
 
     name: Tests
 
@@ -42,8 +42,8 @@ jobs:
       - name: Install PHP dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: |
-            mkdir -p storage/framework/views
-            composer install --no-interaction --no-progress --ansi --optimize-autoloader
+          mkdir -p storage/framework/views
+          composer install --no-interaction --no-progress --ansi --optimize-autoloader
 
       - name: Setup test env configuration
         run: |

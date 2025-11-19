@@ -8,6 +8,7 @@ use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Laravel\Cashier\Subscription;
 use Symfony\Component\HttpFoundation\Response;
 
 final class ResumeSubscriptionController
@@ -18,7 +19,7 @@ final class ResumeSubscriptionController
         $user = $userService->getByInternalUserId($request->input('auth_user_id'));
         $subscription = $user->subscription($request->input('type'));
 
-        if (! $subscription) {
+        if (! $subscription instanceof Subscription) {
             return response()->json(['message' => 'Subscription not found.'], Response::HTTP_NOT_FOUND);
         }
 

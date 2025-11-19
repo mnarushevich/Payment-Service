@@ -11,13 +11,15 @@ use Mockery;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
+use function Pest\Laravel\postJson;
+
 afterEach(function (): void {
     Mockery::close();
 });
 
 describe('POST /subscription/cancel', function (): void {
     it('rejects when token is not provided', function (): void {
-        $this->postJson(getUrl('subscription.cancel'))
+        postJson(getUrl('subscription.cancel'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
                 [
@@ -30,7 +32,7 @@ describe('POST /subscription/cancel', function (): void {
     it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
-        $this->postJson(
+        postJson(
             getUrl('subscription.cancel'),
             data: ['type' => 'silver'],
             headers: getAuthorizationHeader($token),
@@ -44,7 +46,7 @@ describe('POST /subscription/cancel', function (): void {
 
     it('returns 400 in case invalid request', function (): void {
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.cancel'),
             headers: getAuthorizationHeader($token),
         )
@@ -68,7 +70,7 @@ describe('POST /subscription/cancel', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.cancel'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
@@ -98,7 +100,7 @@ describe('POST /subscription/cancel', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.cancel'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
@@ -126,7 +128,7 @@ describe('POST /subscription/cancel', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.cancel'),
             data: ['type' => $mockPaymentMethodType, 'is_cancel_now' => true],
             headers: getAuthorizationHeader($token),
@@ -157,7 +159,7 @@ describe('POST /subscription/cancel', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.cancel'),
             data: ['type' => $mockPaymentMethodType, 'cancel_after_num_days' => $cancelAfterNumberDays],
             headers: getAuthorizationHeader($token),
@@ -185,7 +187,7 @@ describe('POST /subscription/cancel', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.cancel'),
             data: ['type' => $mockPaymentMethodType, 'is_cancel_now' => true],
             headers: getAuthorizationHeader($token),

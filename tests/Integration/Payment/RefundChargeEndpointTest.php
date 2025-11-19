@@ -10,13 +10,15 @@ use Stripe\Refund;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
+use function Pest\Laravel\postJson;
+
 afterEach(function (): void {
     Mockery::close();
 });
 
 describe('POST /charge/refund', function (): void {
     it('rejects when token is not provided', function (): void {
-        $this->postJson(getUrl('charge.refund'))
+        postJson(getUrl('charge.refund'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
                 [
@@ -29,7 +31,7 @@ describe('POST /charge/refund', function (): void {
     it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
-        $this->postJson(
+        postJson(
             getUrl('charge.refund'),
             data: ['payment_id' => 'test_payment_id'],
             headers: getAuthorizationHeader($token),
@@ -43,7 +45,7 @@ describe('POST /charge/refund', function (): void {
 
     it('returns 400 in case invalid request', function (): void {
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(getUrl('charge.refund'), headers: getAuthorizationHeader($token))
+        postJson(getUrl('charge.refund'), headers: getAuthorizationHeader($token))
             ->assertStatus(Response::HTTP_BAD_REQUEST)
             ->assertJson([
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -64,7 +66,7 @@ describe('POST /charge/refund', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('charge.refund'),
             data: ['payment_id' => 'test_payment_id'],
             headers: getAuthorizationHeader($token),
@@ -85,7 +87,7 @@ describe('POST /charge/refund', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('charge.refund'),
             data: ['payment_id' => 'test_payment_id'],
             headers: getAuthorizationHeader($token),

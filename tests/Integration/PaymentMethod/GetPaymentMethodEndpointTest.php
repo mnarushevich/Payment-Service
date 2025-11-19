@@ -9,13 +9,15 @@ use Stripe\Collection;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
+use function Pest\Laravel\getJson;
+
 afterEach(function (): void {
     Mockery::close();
 });
 
 describe('GET /payment-method/list', function (): void {
     it('rejects when token is not provided', function (): void {
-        $this->getJson(getUrl('payment-method.list'))
+        getJson(getUrl('payment-method.list'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
                 [
@@ -28,7 +30,7 @@ describe('GET /payment-method/list', function (): void {
     it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
-        $this->getJson(getUrl('payment-method.list'), headers: getAuthorizationHeader($token))
+        getJson(getUrl('payment-method.list'), headers: getAuthorizationHeader($token))
             ->assertStatus(Response::HTTP_NOT_FOUND)
             ->assertJson([
                 'status' => Response::HTTP_NOT_FOUND,
@@ -50,7 +52,7 @@ describe('GET /payment-method/list', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->getJson(getUrl('payment-method.list'), headers: getAuthorizationHeader($token))
+        getJson(getUrl('payment-method.list'), headers: getAuthorizationHeader($token))
             ->assertStatus(Response::HTTP_OK)
             ->assertJson(['payment_methods' => $mockStripeResponse]);
     });

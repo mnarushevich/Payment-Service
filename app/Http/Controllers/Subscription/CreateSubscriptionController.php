@@ -8,6 +8,7 @@ use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Laravel\Cashier\PaymentMethod;
 use Symfony\Component\HttpFoundation\Response;
 
 final class CreateSubscriptionController
@@ -39,7 +40,7 @@ final class CreateSubscriptionController
             if ($paymentMethodId) {
                 $paymentMethod = $user->findPaymentMethod($paymentMethodId);
 
-                if (! $paymentMethod) {
+                if (! $paymentMethod instanceof PaymentMethod) {
                     return response()->json(['message' => 'Payment method not found.'], Response::HTTP_BAD_REQUEST);
                 }
             }
@@ -49,11 +50,11 @@ final class CreateSubscriptionController
             return response()->json(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
-        if (! $paymentMethod) {
+        if (! $paymentMethod instanceof PaymentMethod) {
             $paymentMethod = $user->defaultPaymentMethod();
         }
 
-        if (! $paymentMethod) {
+        if (! $paymentMethod instanceof PaymentMethod) {
             return response()->json(['message' => 'No payment method found.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -65,7 +66,7 @@ final class CreateSubscriptionController
             }
 
             $subscription = $subscriptionBuilder->create(
-                $paymentMethod->id,
+                $paymentMethod->asStripePaymentMethod()->id,
                 ['metadata' => ['source' => 'payment-service']],
             );
 
