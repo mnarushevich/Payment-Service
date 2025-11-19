@@ -10,13 +10,15 @@ use Mockery;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
+use function Pest\Laravel\postJson;
+
 afterEach(function (): void {
     Mockery::close();
 });
 
 describe('POST /subscription/resume', function (): void {
     it('rejects when token is not provided', function (): void {
-        $this->postJson(getUrl('subscription.resume'))
+        postJson(getUrl('subscription.resume'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
                 [
@@ -29,7 +31,7 @@ describe('POST /subscription/resume', function (): void {
     it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
-        $this->postJson(
+        postJson(
             getUrl('subscription.resume'),
             data: ['type' => 'silver'],
             headers: getAuthorizationHeader($token),
@@ -43,7 +45,7 @@ describe('POST /subscription/resume', function (): void {
 
     it('returns 400 in case invalid request', function (): void {
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.resume'),
             headers: getAuthorizationHeader($token),
         )
@@ -70,7 +72,7 @@ describe('POST /subscription/resume', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.resume'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
@@ -95,7 +97,7 @@ describe('POST /subscription/resume', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.resume'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
@@ -121,7 +123,7 @@ describe('POST /subscription/resume', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.resume'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),
@@ -147,7 +149,7 @@ describe('POST /subscription/resume', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('subscription.resume'),
             data: ['type' => $mockPaymentMethodType],
             headers: getAuthorizationHeader($token),

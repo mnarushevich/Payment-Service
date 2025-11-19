@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Tests\Integration\Auth;
 
 use App\Services\UserService;
+use Laravel\Cashier\Payment;
 use Mockery;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
+
+use function Pest\Laravel\postJson;
 
 afterEach(function (): void {
     Mockery::close();
@@ -15,7 +18,7 @@ afterEach(function (): void {
 
 describe('POST /charge', function (): void {
     it('rejects when token is not provided', function (): void {
-        $this->postJson(getUrl('charge'))
+        postJson(getUrl('charge'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
                 [
@@ -28,7 +31,7 @@ describe('POST /charge', function (): void {
     it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
-        $this->postJson(
+        postJson(
             getUrl('charge'),
             data: ['amount' => 500],
             headers: getAuthorizationHeader($token),
@@ -42,7 +45,7 @@ describe('POST /charge', function (): void {
 
     it('returns 400 in case invalid request', function (): void {
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(getUrl('charge'), headers: getAuthorizationHeader($token))
+        postJson(getUrl('charge'), headers: getAuthorizationHeader($token))
             ->assertStatus(Response::HTTP_BAD_REQUEST)
             ->assertJson([
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -62,7 +65,7 @@ describe('POST /charge', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('charge'),
             data: ['amount' => 500],
             headers: getAuthorizationHeader($token),
@@ -83,7 +86,9 @@ describe('POST /charge', function (): void {
         $userMock = Mockery::mock($this->user)->makePartial();
         $userMock->shouldReceive('defaultPaymentMethod')->once()->andReturn($mockPaymentMethod);
         $mockStripeResponse = getMockData('single-payment');
-        $userMock->shouldReceive('charge')->once()->andReturn($mockStripeResponse);
+        $mockPayment = Mockery::mock(Payment::class);
+        $mockPayment->shouldReceive('jsonSerialize')->andReturn($mockStripeResponse);
+        $userMock->shouldReceive('charge')->once()->andReturn($mockPayment);
 
         $mockUserService = Mockery::mock(UserService::class)->makePartial();
         $mockUserService->shouldReceive('getByInternalUserId')->once()->andReturn($userMock);
@@ -91,7 +96,7 @@ describe('POST /charge', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('charge'),
             data: ['amount' => 500],
             headers: getAuthorizationHeader($token),
@@ -116,7 +121,7 @@ describe('POST /charge', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('charge'),
             data: ['amount' => 500],
             headers: getAuthorizationHeader($token),

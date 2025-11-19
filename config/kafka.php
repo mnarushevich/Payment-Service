@@ -18,8 +18,8 @@ return [
      */
     'sasl' => [
         'mechanisms' => env('KAFKA_MECHANISMS', 'PLAINTEXT'),
-        'username' => env('KAFKA_USERNAME', null),
-        'password' => env('KAFKA_PASSWORD', null),
+        'username' => env('KAFKA_USERNAME'),
+        'password' => env('KAFKA_PASSWORD'),
     ],
 
     /*

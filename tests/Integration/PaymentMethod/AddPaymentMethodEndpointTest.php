@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Tests\Integration\Auth;
 
 use App\Services\UserService;
+use Laravel\Cashier\PaymentMethod;
 use Mockery;
 use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
+
+use function Pest\Laravel\postJson;
 
 afterEach(function (): void {
     Mockery::close();
@@ -15,7 +18,7 @@ afterEach(function (): void {
 
 describe('POST /payment-method/add', function (): void {
     it('rejects when token is not provided', function (): void {
-        $this->postJson(getUrl('payment-method.add'))
+        postJson(getUrl('payment-method.add'))
             ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(
                 [
@@ -28,7 +31,7 @@ describe('POST /payment-method/add', function (): void {
     it('returns 404 in case user from JWT token not found', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
-        $this->postJson(
+        postJson(
             getUrl('payment-method.add'),
             data: [
                 'payment_method' => 'pm_card_visa',
@@ -46,7 +49,7 @@ describe('POST /payment-method/add', function (): void {
     it('returns 400 in case invalid request', function (): void {
         $internalUserId = 'invalid-internal-user-id';
         $token = generateJWTToken($internalUserId);
-        $this->postJson(
+        postJson(
             getUrl('payment-method.add'),
             headers: getAuthorizationHeader($token)
         )
@@ -73,11 +76,11 @@ describe('POST /payment-method/add', function (): void {
         $userMock->shouldReceive('addPaymentMethod')
             ->once()
             ->with($mockPaymentMethod)
-            ->andReturnTrue();
+            ->andReturn(Mockery::mock(PaymentMethod::class));
         $userMock->shouldReceive('updateDefaultPaymentMethod')
             ->once()
             ->with($mockPaymentMethod)
-            ->andReturnTrue();
+            ->andReturn(Mockery::mock(PaymentMethod::class));
 
         $mockUserService = Mockery::mock(UserService::class)->makePartial();
         $mockUserService->shouldReceive('getByInternalUserId')->once()->andReturn($userMock);
@@ -85,7 +88,7 @@ describe('POST /payment-method/add', function (): void {
         app()->bind(StripeClient::class, fn () => $stripeMock);
 
         $token = generateJWTToken($this->user->internal_user_id);
-        $this->postJson(
+        postJson(
             getUrl('payment-method.add'),
             data: [
                 'payment_method' => $mockPaymentMethod,
